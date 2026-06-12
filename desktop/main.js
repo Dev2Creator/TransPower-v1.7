@@ -2,20 +2,31 @@ const { app, BrowserWindow, protocol } = require('electron');
 const path = require('path');
 const url = require('url');
 
-// Custom protocol to bypass file:// restrictions for Web Workers and WASM
+// Register scheme as standard to fix relative paths like CSS/JS
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }
+]);
+
 app.whenReady().then(() => {
   protocol.registerFileProtocol('app', (request, callback) => {
-    let requestUrl = request.url.replace('app://', '');
-    // Handle query params or hashes
-    requestUrl = requestUrl.split('?')[0].split('#')[0];
-    
-    let filePath = path.normalize(`${__dirname}/www/${requestUrl}`);
-    // If it's a directory (or root), serve index.html
-    if (requestUrl === '' || requestUrl === '/') {
-      filePath = path.normalize(`${__dirname}/www/index.html`);
+    try {
+      const parsedUrl = new URL(request.url);
+      let requestPath = parsedUrl.pathname;
+      if (requestPath.startsWith('/')) {
+        requestPath = requestPath.substring(1);
+      }
+      
+      let filePath = path.join(__dirname, 'www', requestPath);
+      
+      // If it's a directory (or root), serve index.html
+      if (requestPath === '' || requestPath === '/') {
+        filePath = path.join(__dirname, 'www', 'index.html');
+      }
+      
+      callback({ path: filePath });
+    } catch (e) {
+      console.error('Protocol error:', e);
     }
-    
-    callback({ path: filePath });
   });
 
   createWindow();
