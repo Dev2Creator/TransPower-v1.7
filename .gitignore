@@ -1,0 +1,29 @@
+# Node
+node_modules/
+dist/
+win-unpacked/
+linux-unpacked/
+.npm/
+
+# Android
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/build/
+mobile/android/local.properties
+*.apk
+
+# Models and large files
+*.onnx
+*.safetensors
+*.bin
+*.pt
+*.incomplete
+.cache/
+jdk*.zip
+mobile/android/jdk*.zip
+pydeps/
+
+
+# OS
+.DS_Store
+Thumbs.db

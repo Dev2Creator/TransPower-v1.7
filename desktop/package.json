@@ -1,0 +1,36 @@
+{
+  "name": "transpwr",
+  "version": "1.7.0",
+  "description": "Trans Power Sweetheart Assistant",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux deb"
+  },
+  "author": {
+    "name": "Anika Mukherjee",
+    "email": "cuteypieanika@gmail.com"
+  },
+  "homepage": "https://transpower.app",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.transpower.desktop",
+    "productName": "Trans Power",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "www/assets/mascot.png"
+    },
+    "linux": {
+      "target": "deb",
+      "icon": "www/assets/mascot.png"
+    }
+  }
+}

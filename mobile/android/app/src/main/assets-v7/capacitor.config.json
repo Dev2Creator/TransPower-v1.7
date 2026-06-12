@@ -1,0 +1,13 @@
+{
+	"appId": "com.transpower.app",
+	"appName": "Trans Power V7",
+	"webDir": "www",
+	"server": {
+		"androidScheme": "https",
+		"cleartext": true
+	},
+	"android": {
+		"webContentsDebuggingEnabled": false,
+		"allowMixedContent": true
+	}
+}

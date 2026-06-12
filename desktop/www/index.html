@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#06040a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Trans Power v7 — Sweetheart Intelligence. A polished offline sanctuary with a private big-sis AI companion.">
+<title>TRANS POWER ✦ V7</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
+</head>
+<body>
+
+<div class="orb a"></div>
+<div class="orb b"></div>
+<div class="orb c"></div>
+<canvas id="sc"></canvas>
+
+<!-- ═══════════════ SETUP OVERLAY ═══════════════ -->
+<div id="setup-overlay">
+  <div class="setup-inner">
+    <div class="setup-frame gc">
+      <div class="setup-eyebrow">
+        <span class="setup-eyebrow-mark">♡</span>
+        <span>Private onboarding</span>
+      </div>
+      <div class="setup-progress" aria-label="Setup progress">
+        <span class="setup-dot active" data-step="1"></span>
+        <span class="setup-dot" data-step="2"></span>
+        <span class="setup-dot" data-step="3"></span>
+        <span class="setup-dot" data-step="4"></span>
+      </div>
+
+      <div class="setup-step active" id="setup-step-1">
+        <div style="font-size:64px;margin-bottom:16px">🏳️‍⚧️</div>
+        <h1 class="dp" style="font-size:42px;margin-bottom:8px">Welcome Home</h1>
+        <p class="setup-sub">Your safe, private, offline sanctuary.<br>Everything stays on this device. Always.</p>
+        <div class="setup-note">Sweetheart lives locally on this phone. No cloud account. No surprise uploads.</div>
+        <button class="bp" style="width:100%;margin-top:32px" onclick="nextSetup(2)">Begin Setup →</button>
+      </div>
+
+      <div class="setup-step" id="setup-step-2">
+        <div style="font-size:42px;margin-bottom:12px">✨</div>
+        <h2 class="dp" style="font-size:32px;margin-bottom:6px">What should I call you?</h2>
+        <p class="setup-sub">Your chosen name — the real one.</p>
+        <input class="setup-input" id="setup-name" placeholder="e.g. Luna, Kai, River..." autofocus>
+        <div class="setup-note">You can change this later in settings whenever you want.</div>
+        <button class="bp" style="width:100%;margin-top:20px" onclick="validateName()">Next →</button>
+      </div>
+
+      <div class="setup-step" id="setup-step-3">
+        <div style="font-size:42px;margin-bottom:12px">💜</div>
+        <h2 class="dp" style="font-size:32px;margin-bottom:6px">Your Pronouns</h2>
+        <p class="setup-sub">I'll use these throughout the app.</p>
+        <div class="pronoun-grid" id="pronoun-grid">
+          <div class="pronoun-opt active" onclick="pickPronoun(this,'she/her')">She / Her</div>
+          <div class="pronoun-opt" onclick="pickPronoun(this,'he/him')">He / Him</div>
+          <div class="pronoun-opt" onclick="pickPronoun(this,'they/them')">They / Them</div>
+          <div class="pronoun-opt" onclick="pickPronoun(this,'ze/zir')">Ze / Zir</div>
+          <div class="pronoun-opt" onclick="pickPronoun(this,'xe/xem')">Xe / Xem</div>
+          <div class="pronoun-opt" onclick="pickPronoun(this,'custom')">Custom</div>
+        </div>
+        <input class="setup-input" id="setup-custom-pronoun" placeholder="e.g. fae/faer" style="display:none;margin-top:10px">
+        <button class="bp" style="width:100%;margin-top:20px" onclick="nextSetup(4)">Next →</button>
+      </div>
+
+      <div class="setup-step" id="setup-step-4">
+        <div style="font-size:42px;margin-bottom:12px">🎙️</div>
+        <h2 class="dp" style="font-size:32px;margin-bottom:6px">Voice Greeting</h2>
+        <p class="setup-sub">I can greet you by name when you open the app using text-to-speech.</p>
+        <div class="voice-toggle-wrap">
+          <div class="voice-toggle-label">
+            <span style="font-size:20px">🔊</span>
+            <div>
+              <div style="font-weight:700">Speak my name</div>
+              <div style="font-size:11px;color:var(--muted)">Audio greeting each session</div>
+            </div>
+          </div>
+          <label class="switch"><input type="checkbox" id="setup-voice" checked><span class="slider"></span></label>
+        </div>
+        <div class="setup-note">You stay in control. Text-first works beautifully even with voice off.</div>
+        <button class="bp" style="width:100%;margin-top:24px" onclick="completeSetup()">✦ Start My Journey</button>
+      </div>
+      <div class="setup-foot">Trans Power v7 · Sweetheart local edition</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="home" class="tab active">
+  <div class="hero">
+    <div class="hf">
+      <div style="background:#5BCEFA"></div>
+      <div style="background:#F5A9B8"></div>
+      <div style="background:#FAFAFA"></div>
+      <div style="background:#F5A9B8"></div>
+      <div style="background:#5BCEFA"></div>
+    </div>
+    <div>
+      <div class="pill" style="margin-bottom:16px">
+        <span class="pd"></span>
+        <span id="user-greeting">Live · Be Free · Be You</span>
+        <span id="ai-status-badge" class="ai-badge offline">Sweetheart Offline</span>
+      </div>
+      <h1 class="sh" id="htitle">TRANS<br>POWER</h1>
+      <p class="tl" id="hero-tagline">"being trans is not a weakness"</p>
+      <div id="hero-date" class="hero-date"></div>
+      <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:16px">
+        <button class="bp" onclick="sw('support')">💬 Talk to Someone</button>
+        <button class="bg crisis-btn" onclick="showCrisisModal()">🆘 Crisis Help</button>
+        <button class="bg" onclick="showSettings()" style="padding:8px 14px;font-size:18px">⚙️</button>
+      </div>
+      
+
+
+    </div>
+  </div>
+
+  <!-- Affirmation Card -->
+  <div class="aff-card">
+    <div class="aff-label">✦ Today's Affirmation for <span id="aff-name">you</span> ✦</div>
+    <div class="aff-text" id="aff-text">You are valid today.</div>
+    <div class="aff-sub" id="aff-date"></div>
+  </div>
+
+  <!-- Daily Goal -->
+  <div class="section-label">Daily Focus</div>
+  <div class="goal-card">
+    <div style="font-size:28px">🎯</div>
+    <div style="flex:1">
+      <div class="goal-label">Today's Small Goal</div>
+      <div id="goal-text" class="goal-text">Practice one voice exercise for 5 minutes.</div>
+    </div>
+    <button class="bg" style="padding:8px 12px;font-size:11px" onclick="cycleGoal()">Next</button>
+  </div>
+
+  <!-- Mood Check-in -->
+  <div class="section-label">How are you feeling?</div>
+  <div class="mood-row" id="mood-row">
+    <div class="mood-btn" onclick="logMood(this, 5, '🌟')"><span>🌟</span><small>Amazing</small></div>
+    <div class="mood-btn" onclick="logMood(this, 4, '😊')"><span>😊</span><small>Good</small></div>
+    <div class="mood-btn" onclick="logMood(this, 3, '😐')"><span>😐</span><small>Okay</small></div>
+    <div class="mood-btn" onclick="logMood(this, 2, '😔')"><span>😔</span><small>Low</small></div>
+    <div class="mood-btn" onclick="logMood(this, 1, '😢')"><span>😢</span><small>Hard</small></div>
+  </div>
+  <div id="mood-streak-bar" class="mood-streak-bar" style="display:none"></div>
+
+  <!-- Quick Access -->
+  <div class="section-label">Quick Access</div>
+  <div class="qg">
+    <div class="qc" onclick="sw('learn')"><div class="qci">📚</div><div class="qcl">Learn</div></div>
+    <div class="qc" onclick="sw('glow')"><div class="qci">💄</div><div class="qcl">Glow</div></div>
+    <div class="qc" onclick="sw('support');osp('companion')"><div class="qci">♡</div><div class="qcl">Sweetheart</div></div>
+    <div class="qc" onclick="sw('wellness')"><div class="qci">🧘</div><div class="qcl">Wellness</div></div>
+    <div class="qc" onclick="sw('voice')"><div class="qci">🎙️</div><div class="qcl">Voice</div></div>
+    <div class="qc" onclick="sw('meds')"><div class="qci">💊</div><div class="qcl">Meds</div></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="sr">
+    <div class="si"><div class="sn" id="stat-days">0</div><div class="sd">Days Active</div></div>
+    <div class="si"><div class="sn" id="stat-moods">0</div><div class="sd">Moods Logged</div></div>
+    <div class="si"><div class="sn" id="stat-journal">0</div><div class="sd">Journal</div></div>
+  </div>
+
+  <!-- Crisis Helplines -->
+  <div class="crisis-bar">
+    <span style="font-size:17px">📞</span>
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--blue)">Crisis Helplines</div>
+      <div style="font-size:11px;color:var(--muted)">US: 877-565-8860 · UK: 116 123 · India: 9152987821</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LEARN ═══════════════ -->
+<div id="learn" class="tab">
+  <div style="padding:24px 16px 0">
+    <div class="sl" style="margin-bottom:5px">Knowledge Hub</div>
+    <h2 class="dp" style="font-size:33px;font-weight:700;margin-bottom:15px">Learn &amp; <span class="gt">Understand</span></h2>
+    <div class="stabs" id="ltabs" style="flex-wrap:wrap">
+      <button class="stab active" onclick="sls('terms',this)">Terms</button>
+      <button class="stab" onclick="sls('hrt',this)">HRT</button>
+      <button class="stab" onclick="sls('myth',this)">Myths</button>
+      <button class="stab" onclick="sls('timeline',this)">📅 Timeline</button>
+      <button class="stab" onclick="sls('comingout',this)">🌈 Coming Out</button>
+    </div>
+  </div>
+  <!-- Terms -->
+  <div id="lterms" class="sp active" style="padding:0 16px 32px">
+    <div class="si2"><span class="sico">🔍</span><input class="sinp" id="ts" placeholder="Search terms..." oninput="fT(this.value)"></div>
+    <div class="cfs">
+      <button class="cfb active" onclick="fC('all',this)">All</button>
+      <button class="cfb" onclick="fC('identity',this)">Identity</button>
+      <button class="cfb" onclick="fC('medical',this)">Medical</button>
+      <button class="cfb" onclick="fC('social',this)">Social</button>
+      <button class="cfb" onclick="fC('community',this)">Community</button>
+    </div>
+    <div class="tg" id="tg"></div>
+  </div>
+  <!-- HRT -->
+  <div id="lhrt" class="sp" style="padding:0 16px 32px">
+    <div class="gc" style="padding:16px;margin-bottom:13px">
+      <div class="pill" style="margin-bottom:9px">⚕️ Educational — Not Medical Advice</div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6">Always consult a trans-affirming healthcare provider.</p>
+    </div>
+    <div id="hrtacc"></div>
+  </div>
+  <!-- Myths -->
+  <div id="lmyth" class="sp" style="padding:0 16px 32px">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:13px;text-align:center">👆 Tap a card to reveal the truth</p>
+    <div class="mvrc" id="mvrc"></div>
+    <div style="display:flex;justify-content:center;gap:12px;margin-top:10px">
+      <button class="bg" onclick="pM()">← Prev</button>
+      <button class="bg" onclick="nM()">Next →</button>
+    </div>
+  </div>
+  <!-- V6: Timeline -->
+  <div id="ltimeline" class="sp" style="padding:0 16px 32px">
+    <div class="gc" style="padding:16px;margin-bottom:13px">
+      <div class="pill" style="margin-bottom:9px">📅 Interactive Transition Timeline</div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6">What to expect and when. Everyone's timeline is different — this is a general guide.</p>
+    </div>
+    <div class="stabs" style="margin-bottom:14px">
+      <button class="stab active" id="tl-fem-btn" onclick="showTimeline('feminising')">💊 Feminising</button>
+      <button class="stab" id="tl-masc-btn" onclick="showTimeline('masculinising')">💉 Masculinising</button>
+    </div>
+    <div id="timeline-cards"></div>
+  </div>
+  <!-- V6: Coming Out Guide -->
+  <div id="lcomingout" class="sp" style="padding:0 16px 32px">
+    <div class="gc" style="padding:16px;margin-bottom:13px">
+      <div class="pill" style="margin-bottom:9px">🌈 Coming Out Guide</div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6">Step by step. At your own pace. Your safety comes first. Always.</p>
+    </div>
+    <div id="comingout-steps"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ GLOW ═══════════════ -->
+<div id="glow" class="tab">
+  <div style="padding:24px 16px 0">
+    <div class="sl" style="margin-bottom:4px">Style & Expression</div>
+    <h2 class="dp" style="font-size:33px;font-weight:700">Your <span class="gt">Glow Guide</span> ✨</h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px;margin-bottom:18px">Built-in AI style advice — no internet needed ⚡</p>
+    <div class="gsteps">
+      <div class="gs active" id="gs1">1 · Photo</div>
+      <div class="gs" id="gs2">2 · Goal</div>
+      <div class="gs" id="gs3">3 · Magic ✦</div>
+    </div>
+  </div>
+  <div style="padding:0 16px 32px">
+    <!-- Step 1 -->
+    <div id="gs1p">
+      <div class="uz" id="uz" onclick="document.getElementById('pi').click()">
+        <div style="font-size:42px;margin-bottom:9px">📸</div>
+        <p style="font-weight:700;margin-bottom:3px">Upload your selfie (optional)</p>
+        <p style="font-size:13px;color:var(--muted)">Used locally — never uploaded</p>
+        <p style="font-size:12px;color:var(--pink);margin-top:7px">Or skip for general advice →</p>
+      </div>
+      <input type="file" id="pi" accept="image/*" onchange="hP(this)" style="display:none">
+      <div id="ppw" style="display:none;text-align:center">
+        <img id="pp" alt="Your photo" style="width:100%;max-height:210px;object-fit:cover;border-radius:16px;border:2px solid var(--glass-border)">
+        <button class="bg" style="margin-top:9px;width:100%" onclick="rP()">🔄 Change Photo</button>
+      </div>
+      <div style="display:flex;gap:9px;margin-top:16px">
+        <button class="bp" style="flex:1" onclick="gS2()">Next →</button>
+        <button class="bg" onclick="skipS2()">Skip Photo</button>
+      </div>
+    </div>
+    <!-- Step 2 -->
+    <div id="gs2p" style="display:none">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">What vibe are you going for?</p>
+      <div class="sgrid">
+        <div class="gcard" onclick="sG(this,'Soft Feminine')"><div class="ge">🌸</div><div class="gn">Soft Feminine</div></div>
+        <div class="gcard" onclick="sG(this,'Elegant & Refined')"><div class="ge">✨</div><div class="gn">Elegant</div></div>
+        <div class="gcard" onclick="sG(this,'Cute & Playful')"><div class="ge">🎀</div><div class="gn">Cute</div></div>
+        <div class="gcard" onclick="sG(this,'Natural & Real')"><div class="ge">🌿</div><div class="gn">Natural</div></div>
+        <div class="gcard" onclick="sG(this,'Bold & Powerful')"><div class="ge">💜</div><div class="gn">Bold</div></div>
+        <div class="gcard" onclick="sG(this,'Cozy & Comfortable')"><div class="ge">🧸</div><div class="gn">Cozy</div></div>
+        <div class="gcard" onclick="sG(this,'Alternative & Edgy')"><div class="ge">🖤</div><div class="gn">Edgy</div></div>
+        <div class="gcard" onclick="sG(this,'Androgynous & Fluid')"><div class="ge">🏳️‍⚧️</div><div class="gn">Fluid</div></div>
+      </div>
+      <div style="display:flex;gap:9px">
+        <button class="bg" onclick="gB()">← Back</button>
+        <button class="bp" style="flex:1" id="gbtn" onclick="genGlow()" disabled>✨ Generate Guide</button>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div id="gs3p" style="display:none">
+      <div id="gldr" style="text-align:center;padding:32px">
+        <div class="spin" style="width:36px;height:36px;margin:0 auto 13px;border-width:3px"></div>
+        <p class="dp" style="font-size:19px;font-style:italic;color:var(--pink)">Creating your glow guide...</p>
+      </div>
+      <div id="gres" class="gout"></div>
+      <div id="gacts" style="display:none;margin-top:14px">
+        <button class="bp" style="width:100%" onclick="rGlow()">✨ New Guide</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SUPPORT ═══════════════ -->
+<div id="support" class="tab">
+  <div style="padding:24px 16px 0">
+    <div class="sl" style="margin-bottom:4px">You Are Not Alone</div>
+    <h2 class="dp" style="font-size:33px;font-weight:700;margin-bottom:15px">Your <span class="gt">Safe Space</span> 💖</h2>
+    <div class="stabs" style="flex-wrap:wrap">
+      <button class="stab active" id="ctb" onclick="osp('chat')">♡ Sweetheart Chat</button>
+      <button class="stab" id="ptb" onclick="osp('companion')">🧠 Local Brain</button>
+      <button class="stab" id="stb" onclick="osp('stories')">💖 Stories</button>
+      <button class="stab" id="wtb" onclick="osp('wall')">🌸 Wall</button>
+    </div>
+  </div>
+  <div style="padding:0 16px 32px">
+    <!-- Sweetheart Chat -->
+    <div id="cpanel" class="sp active">
+      <div class="support-intro">
+        <div>
+          <div class="support-title">Talk it through right now</div>
+          <div class="support-sub">Fast offline comfort for heavy days, wobbly moments, and simple reassurance.</div>
+        </div>
+        <div class="support-pills">
+          <span class="support-pill">Private</span>
+          <span class="support-pill">Instant</span>
+        </div>
+      </div>
+      <div class="ai-mode-bar offline" id="chat-ai-bar">
+        <div class="ai-mode-dot" style="background:#5BCEFA"></div>
+        <span id="chat-ai-label">Sweetheart classic offline engine</span>
+      </div>
+      <div class="cw" id="cw"></div>
+      <div class="cir">
+        <input class="cinp" id="ci" placeholder="Share what's on your mind..."
+               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sC();}">
+        <button class="cs" onclick="sC()" aria-label="Send">➤</button>
+      </div>
+      <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:7px">Supporting, not replacing a doctor · Crisis: <a href="tel:8775658860" style="color:var(--blue)">877-565-8860</a></p>
+      <div class="quick-topics">
+        <button class="bg qtopic" onclick="qC('I am feeling anxious about coming out')">Coming out</button>
+        <button class="bg qtopic" onclick="qC('Tell me about HRT emotional changes')">HRT feelings</button>
+        <button class="bg qtopic" onclick="qC('I need encouragement today')">Encouragement 💖</button>
+        <button class="bg qtopic" onclick="qC('How do I deal with gender dysphoria?')">Dysphoria</button>
+        <button class="bg qtopic" onclick="qC('I feel like no one understands me')">Feeling alone</button>
+        <button class="bg qtopic" onclick="qC('Tips for voice training')">Voice training</button>
+        <button class="bg qtopic" onclick="qC('What is gender euphoria?')">Euphoria</button>
+        <button class="bg qtopic" onclick="qC('How do I change my legal name?')">Legal name</button>
+      </div>
+    </div>
+    
+    <!-- Companion (Offline Sweetheart AI) -->
+    <div id="ppanel" class="sp">
+      <div class="ai-mode-bar offline" id="sweetheart-brain-bar">
+        <div class="ai-mode-dot" style="background:#F5A9B8"></div>
+        <span id="sweetheart-brain-label">Sweetheart AI — Offline big caring sis</span>
+      </div>
+
+      <div class="sweetheart-hero">
+        <div class="sweetheart-mark">♡</div>
+        <div>
+          <div class="sweetheart-title">Sweetheart Intelligence</div>
+          <div class="sweetheart-sub">Private local support, app guidance, and gentle check-ins. The classic engine answers instantly; the 135M Lite brain wakes in the background when available.</div>
+          <div class="support-pills">
+            <span class="support-pill">135M Lite</span>
+            <span class="support-pill">On-device</span>
+            <span class="support-pill">Big-sis warmth</span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Chat Box -->
+      <div class="cw" id="companion-chat-box" style="min-height:200px;max-height:45vh"></div>
+      <div class="cir">
+        <input class="cinp" id="companion-input" placeholder="Talk to Sweetheart..."
+               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCompanionMsg();}">
+        <button class="cs" id="companion-send" onclick="sendCompanionMsg()" aria-label="Send">➤</button>
+      </div>
+      <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:7px">100% offline · Powered by your app data · Never uploaded</p>
+      <div class="quick-topics">
+        <button class="bg qtopic" onclick="document.getElementById('companion-input').value='Check on me';sendCompanionMsg()">♡ Check on me</button>
+        <button class="bg qtopic" onclick="document.getElementById('companion-input').value='How am I doing?';sendCompanionMsg()">📊 My stats</button>
+        <button class="bg qtopic" onclick="document.getElementById('companion-input').value='Give me a tip';sendCompanionMsg()">✨ Get a tip</button>
+        <button class="bg qtopic" onclick="document.getElementById('companion-input').value='I feel sad today';sendCompanionMsg()">💙 Feeling sad</button>
+        <button class="bg qtopic" onclick="document.getElementById('companion-input').value='Tell me about dysphoria';sendCompanionMsg()">🌸 Dysphoria</button>
+        <button class="bg qtopic" onclick="document.getElementById('companion-input').value='Who are you?';sendCompanionMsg()">🤖 Who are you?</button>
+      </div>
+    </div>
+    <!-- Stories -->
+    <div id="spanel" class="sp">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:13px">Real moments. Real feelings. Tap to read. 💖</p>
+      <div class="sc2" id="scards"></div>
+    </div>
+    <!-- Wall -->
+    <div id="wpanel" class="sp">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:11px">Share anonymously — no names, no judgment. 🌸</p>
+      <textarea class="wta" id="wi" placeholder="What's in your heart right now..."></textarea>
+      <button class="bp" style="width:100%;margin:9px 0 16px" onclick="pW()">🌸 Share Anonymously</button>
+      <div class="sl" style="margin-bottom:9px">From the Community</div>
+      <div class="wps" id="wps"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ WELLNESS (NEW) ═══════════════ -->
+<div id="wellness" class="tab">
+  <div style="padding:24px 16px 0">
+    <div class="sl" style="margin-bottom:4px">Mind & Body</div>
+    <h2 class="dp" style="font-size:33px;font-weight:700;margin-bottom:15px">Your <span class="gt">Wellness</span> 🧘</h2>
+    <div class="stabs" style="flex-wrap:wrap">
+      <button class="stab active" id="wt-breathe" onclick="switchWellness('breathe')">🌬️ Breathe</button>
+      <button class="stab" id="wt-journal" onclick="switchWellness('journal')">📓 Journal</button>
+      <button class="stab" id="wt-mood" onclick="switchWellness('mood')">📊 Mood</button>
+      <button class="stab" id="wt-mindful" onclick="switchWellness('mindful')">🧘 Mindful</button>
+      <button class="stab" id="wt-sideeffects" onclick="switchWellness('sideeffects')">💊 Side FX</button>
+      <button class="stab" id="wt-safety" onclick="switchWellness('safety')">🛡️ Safety</button>
+    </div>
+  </div>
+  <div style="padding:0 16px 32px">
+    <!-- Breathing -->
+    <div id="wp-breathe" class="med-panel active">
+      <div class="breathe-card">
+        <div class="breathe-circle" id="breathe-circle">
+          <div class="breathe-text" id="breathe-text">Tap to start</div>
+        </div>
+        <div id="breathe-timer" class="breathe-timer"></div>
+        <div class="breathe-controls">
+          <button class="bg" onclick="startBreathing('box')">Box Breathing</button>
+          <button class="bg" onclick="startBreathing('calm')">4-7-8 Calm</button>
+          <button class="bg" onclick="startBreathing('energy')">Energize</button>
+        </div>
+        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">Close your eyes. Follow the rhythm. You are safe. 🌸</p>
+      </div>
+    </div>
+    <!-- Journal -->
+    <div id="wp-journal" class="med-panel">
+      <div class="journal-compose">
+        <div class="mf-label">Private Journal Entry</div>
+        <textarea class="wta" id="journal-input" placeholder="Write freely. This is for your eyes only..." style="height:120px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <select class="mf-select" id="journal-mood" style="flex:1">
+            <option value="🌟">🌟 Amazing</option>
+            <option value="😊">😊 Good</option>
+            <option value="😐" selected>😐 Okay</option>
+            <option value="😔">😔 Low</option>
+            <option value="😢">😢 Hard</option>
+          </select>
+          <button class="bp" style="flex:1" onclick="saveJournal()">Save Entry</button>
+        </div>
+      </div>
+      <div class="sl" style="margin:18px 0 10px">Past Entries</div>
+      <div id="journal-entries"></div>
+    </div>
+    <!-- Mood History -->
+    <div id="wp-mood" class="med-panel">
+      <div class="sl" style="margin-bottom:14px">Mood History (Last 30 days)</div>
+      <div id="mood-chart" class="mood-chart"></div>
+      <div id="mood-insights" class="mood-insights"></div>
+    </div>
+    <!-- Safety Plan -->
+    <!-- V6: Mindfulness -->
+    <div id="wp-mindful" class="med-panel">
+      <div class="sl" style="margin-bottom:8px">Guided Mindfulness</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">10 trans-affirming mindfulness exercises. Tap to begin. 🧘</p>
+      <div id="mindful-list" class="v6-exercise-grid"></div>
+      <div id="mindful-active" style="display:none" class="gc" style="padding:18px;margin-top:14px">
+        <div id="mindful-active-title" class="dp" style="font-size:22px;font-weight:600;margin-bottom:8px"></div>
+        <div id="mindful-active-steps"></div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button class="bg" style="flex:1" onclick="prevMindfulStep()">← Prev</button>
+          <button class="bp" style="flex:1" id="mindful-next-btn" onclick="nextMindfulStep()">Next →</button>
+        </div>
+      </div>
+    </div>
+    <!-- V6: Side Effects Tracker -->
+    <div id="wp-sideeffects" class="med-panel">
+      <div class="sl" style="margin-bottom:8px">Side Effect Tracker</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Log side effects and see correlations with your meds. 💊</p>
+      <div class="gc" style="padding:16px;margin-bottom:14px">
+        <div class="mf-group">
+          <div class="mf-label">Side Effect</div>
+          <select class="mf-select" id="se-select">
+            <option value="">Choose a side effect...</option>
+          </select>
+        </div>
+        <div class="mf-group">
+          <div class="mf-label">Severity</div>
+          <div style="display:flex;gap:8px">
+            <button class="bg se-sev active" data-sev="mild" onclick="pickSESev(this)" style="flex:1;font-size:11px">😐 Mild</button>
+            <button class="bg se-sev" data-sev="moderate" onclick="pickSESev(this)" style="flex:1;font-size:11px">😣 Moderate</button>
+            <button class="bg se-sev" data-sev="severe" onclick="pickSESev(this)" style="flex:1;font-size:11px">🔴 Severe</button>
+          </div>
+        </div>
+        <div class="mf-group">
+          <div class="mf-label">Notes (optional)</div>
+          <input class="mf-input" id="se-notes" placeholder="e.g. worse in the morning...">
+        </div>
+        <button class="bp" style="width:100%" onclick="logSideEffect()">📋 Log Side Effect</button>
+      </div>
+      <div class="sl" style="margin:14px 0 8px">Recent Logs</div>
+      <div id="se-log-list"></div>
+      <div id="se-insights" class="gc" style="padding:14px;margin-top:14px;display:none">
+        <div class="sl" style="margin-bottom:6px;font-size:11px">📊 Insights</div>
+        <div id="se-insights-content" style="font-size:13px;color:var(--muted);line-height:1.6"></div>
+      </div>
+    </div>
+    <!-- Safety Plan -->
+    <div id="wp-safety" class="med-panel">
+      <div class="gc" style="padding:18px;margin-bottom:14px">
+        <div style="font-size:24px;margin-bottom:8px">🛡️</div>
+        <h3 class="dp" style="font-size:22px;margin-bottom:6px">My Safety Plan</h3>
+        <p style="font-size:12px;color:var(--muted);line-height:1.6">A personal plan for when things feel overwhelming. Fill this out when you're calm — use it when you're not.</p>
+      </div>
+      <div class="mf-group">
+        <div class="mf-label">Warning signs I notice in myself</div>
+        <textarea class="wta" id="safety-signs" placeholder="e.g. withdrawing, not eating, feeling numb..." style="height:70px"></textarea>
+      </div>
+      <div class="mf-group">
+        <div class="mf-label">Things that help me cope</div>
+        <textarea class="wta" id="safety-coping" placeholder="e.g. music, walking, calling a friend..." style="height:70px"></textarea>
+      </div>
+      <div class="mf-group">
+        <div class="mf-label">People I can reach out to</div>
+        <textarea class="wta" id="safety-people" placeholder="e.g. my friend Alex, my therapist..." style="height:70px"></textarea>
+      </div>
+      <div class="mf-group">
+        <div class="mf-label">My reason to keep going</div>
+        <textarea class="wta" id="safety-reason" placeholder="Write something to remind future-you..." style="height:70px"></textarea>
+      </div>
+      <button class="bp" style="width:100%" onclick="saveSafetyPlan()">💜 Save My Plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ VOICE ═══════════════ -->
+<div id="voice" class="tab">
+  <div style="padding:24px 16px 0">
+    <div class="sl" style="margin-bottom:4px">Voice Training</div>
+    <h2 class="dp" style="font-size:33px;font-weight:700;margin-bottom:15px">Voice <span class="gt">Coach</span> 🎙️</h2>
+  </div>
+  <div style="padding:0 16px 32px">
+
+    <!-- AI Mode Bar -->
+    <div class="ai-mode-bar" id="voice-ai-bar" style="margin-bottom:16px">
+      <div class="ai-mode-dot" id="voice-ai-dot"></div>
+      <span id="voice-ai-label">AI Coach — Ready</span>
+      <button class="ai-mode-btn" onclick="getVoiceAICoaching()">🤖 Get AI Coaching</button>
+    </div>
+
+    <!-- Femininity Score Ring -->
+    <div class="voice-score-wrap">
+      <svg class="score-ring" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+        <circle cx="60" cy="60" r="52" fill="none" stroke="url(#scoreGrad)" stroke-width="10"
+          stroke-dasharray="327" stroke-dashoffset="327" stroke-linecap="round"
+          id="score-ring-circle" style="transition:stroke-dashoffset 0.8s ease;transform:rotate(-90deg);transform-origin:center"/>
+        <defs>
+          <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#5BCEFA"/>
+            <stop offset="100%" stop-color="#F5A9B8"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="score-inner">
+        <div class="score-num" id="voice-score">—</div>
+        <div class="score-label">Fem. Score</div>
+      </div>
+    </div>
+
+    <!-- 6-Parameter Grid -->
+    <div class="voice-params-grid">
+      <div class="vparam">
+        <div class="vp-icon">🎵</div>
+        <div class="vp-val" id="vp-pitch-val">— Hz</div>
+        <div class="vp-label">Pitch</div>
+        <div class="vp-bar"><div class="vp-fill" id="vp-pitch-fill" style="background:#5BCEFA"></div></div>
+        <div class="vp-hint" id="vp-pitch-hint">Target: 165+ Hz</div>
+      </div>
+      <div class="vparam">
+        <div class="vp-icon">🔔</div>
+        <div class="vp-val" id="vp-res-val">—</div>
+        <div class="vp-label">Resonance</div>
+        <div class="vp-bar"><div class="vp-fill" id="vp-res-fill" style="background:#F5A9B8"></div></div>
+        <div class="vp-hint" id="vp-res-hint">Head vs Chest</div>
+      </div>
+      <div class="vparam">
+        <div class="vp-icon">✨</div>
+        <div class="vp-val" id="vp-bright-val">—</div>
+        <div class="vp-label">Brightness</div>
+        <div class="vp-bar"><div class="vp-fill" id="vp-bright-fill" style="background:#c4a0f7"></div></div>
+        <div class="vp-hint" id="vp-bright-hint">Spectral centroid</div>
+      </div>
+      <div class="vparam">
+        <div class="vp-icon">🎼</div>
+        <div class="vp-val" id="vp-hnr-val">—</div>
+        <div class="vp-label">Clarity</div>
+        <div class="vp-bar"><div class="vp-fill" id="vp-hnr-fill" style="background:#5BCEFA"></div></div>
+        <div class="vp-hint" id="vp-hnr-hint">Voice smoothness</div>
+      </div>
+      <div class="vparam">
+        <div class="vp-icon">⚡</div>
+        <div class="vp-val" id="vp-energy-val">—</div>
+        <div class="vp-label">Energy</div>
+        <div class="vp-bar"><div class="vp-fill" id="vp-energy-fill" style="background:#F5A9B8"></div></div>
+        <div class="vp-hint" id="vp-energy-hint">Volume level</div>
+      </div>
+      <div class="vparam">
+        <div class="vp-icon">📊</div>
+        <div class="vp-val" id="vp-stab-val">—</div>
+        <div class="vp-label">Stability</div>
+        <div class="vp-bar"><div class="vp-fill" id="vp-stab-fill" style="background:#c4a0f7"></div></div>
+        <div class="vp-hint" id="vp-stab-hint">Pitch steadiness</div>
+      </div>
+    </div>
+
+    <!-- Waveform -->
+    <div class="voice-display" style="margin-top:16px">
+      <canvas id="voice-canvas" width="340" height="100" style="width:100%;border-radius:12px"></canvas>
+    </div>
+
+    <div style="display:flex;gap:9px;margin-top:14px">
+      <button class="bp" style="flex:1" id="voice-start" onclick="toggleVoice()">🎙️ Start Analyzing</button>
+      <button class="bg" style="flex-shrink:0;padding:10px 14px" onclick="startCalibration()" title="Calibrate Baseline">🎯 Calibrate</button>
+      <button class="bg" style="flex-shrink:0;padding:10px 14px" onclick="saveVoiceSnapshot()" title="Save snapshot">💾</button>
+    </div>
+
+    <!-- Live Feedback -->
+    <div class="gc voice-feedback-card" id="voice-feedback-card" style="margin-top:16px;display:none;padding:14px">
+      <div class="sl" style="margin-bottom:6px;font-size:12px">🔴 Live Feedback</div>
+      <div id="voice-live-feedback" style="font-size:14px;line-height:1.7;color:var(--text)"></div>
+    </div>
+
+    <!-- AI Coaching Panel -->
+    <div class="gc" id="voice-ai-panel" style="margin-top:16px;display:none;padding:18px">
+      <div class="sl" style="margin-bottom:8px">🤖 AI Voice Coach</div>
+      <div id="voice-ai-result" style="font-size:13px;line-height:1.8;color:var(--text)"></div>
+      <div id="voice-ai-loading" style="display:none;text-align:center;padding:20px">
+        <div class="cty"><span></span><span></span><span></span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px">AI Coach analyzing your voice...</div>
+      </div>
+    </div>
+
+    <!-- Training Drills -->
+    <div class="gc" style="margin-top:16px;padding:16px">
+      <div class="sl" style="margin-bottom:12px">🎯 Training Drills</div>
+      <div class="voice-drills">
+        <div class="drill-card" onclick="startDrill(this,'Hum on a high note feeling the vibration in your face not your chest. Hold for 5 seconds. The buzz should be in nose and forehead.')">
+          <div class="drill-icon">😌</div>
+          <div class="drill-name">Mask Resonance</div>
+          <div class="drill-desc">Shift vibration to face</div>
+        </div>
+        <div class="drill-card" onclick="startDrill(this,'Say we will really like that — focus on keeping your pitch above 160Hz throughout. Try it 5 times slowly.')">
+          <div class="drill-icon">💬</div>
+          <div class="drill-name">Pitch Anchoring</div>
+          <div class="drill-desc">Sustain target pitch</div>
+        </div>
+        <div class="drill-card" onclick="startDrill(this,'Read aloud with rising intonation at sentence ends. Try: It was so beautiful, wasn&apos;t it? Add natural melody and warmth.')">
+          <div class="drill-icon">🎶</div>
+          <div class="drill-name">Intonation</div>
+          <div class="drill-desc">Feminine speech melody</div>
+        </div>
+        <div class="drill-card" onclick="startDrill(this,'Whisper see sea ski she then say them at normal volume. Notice how the bright tone carries over naturally.')">
+          <div class="drill-icon">🌬️</div>
+          <div class="drill-name">Brightness Drill</div>
+          <div class="drill-desc">Increase vocal clarity</div>
+        </div>
+        <div class="drill-card" onclick="startDrill(this,'Hum a scale slowly upward. Keep throat relaxed, use breath support from your diaphragm. Glide smoothly between notes.')">
+          <div class="drill-icon">🎵</div>
+          <div class="drill-name">Scale Glide</div>
+          <div class="drill-desc">Smooth pitch transitions</div>
+        </div>
+        <div class="drill-card" onclick="startDrill(this,'Say hello with genuine excitement then in conversation tone. Practice until both feel equally natural and effortless.')">
+          <div class="drill-icon">✨</div>
+          <div class="drill-name">Naturalness</div>
+          <div class="drill-desc">Sound effortlessly you</div>
+        </div>
+      </div>
+      <div id="drill-instructions" class="drill-active" style="display:none"></div>
+    </div>
+
+    <!-- Range Legend -->
+    <div class="gc" style="padding:14px;margin-top:10px">
+      <div class="sl" style="margin-bottom:10px;font-size:12px">Pitch Target Ranges</div>
+      <div class="voice-ranges">
+        <div class="vr"><div class="vr-bar masc"></div><span>Masculine<br>85–165 Hz</span></div>
+        <div class="vr"><div class="vr-bar andro"></div><span>Androgynous<br>150–200 Hz</span></div>
+        <div class="vr"><div class="vr-bar fem"></div><span>Feminine<br>165–300 Hz</span></div>
+      </div>
+    </div>
+
+    <div class="sl" style="margin:18px 0 10px">Session History</div>
+    <div id="voice-history"></div>
+
+    <!-- V6: Exercise Library -->
+    <div class="sl" style="margin:24px 0 10px">📚 Exercise Library (22 exercises)</div>
+    <div class="cfs" style="margin-bottom:12px">
+      <button class="cfb active" onclick="filterExercises('all',this)">All</button>
+      <button class="cfb" onclick="filterExercises('warmup',this)">Warm Up</button>
+      <button class="cfb" onclick="filterExercises('pitch',this)">Pitch</button>
+      <button class="cfb" onclick="filterExercises('resonance',this)">Resonance</button>
+      <button class="cfb" onclick="filterExercises('intonation',this)">Intonation</button>
+      <button class="cfb" onclick="filterExercises('daily',this)">Daily</button>
+      <button class="cfb" onclick="filterExercises('advanced',this)">Advanced</button>
+    </div>
+    <div id="voice-exercise-list" class="v6-exercise-grid"></div>
+    <div id="voice-exercise-active" class="gc" style="display:none;padding:18px;margin-top:14px">
+      <div id="ve-active-title" class="dp" style="font-size:20px;font-weight:600;margin-bottom:4px"></div>
+      <div id="ve-active-meta" style="font-size:11px;color:var(--muted);margin-bottom:12px"></div>
+      <div id="ve-active-steps"></div>
+      <button class="bg" style="width:100%;margin-top:12px" onclick="document.getElementById('voice-exercise-active').style.display='none'">Done ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MEDS ═══════════════ -->
+<div id="meds" class="tab">
+  <div style="padding:24px 16px 0">
+    <div class="sl" style="margin-bottom:4px">Digital Bunker</div>
+    <h2 class="dp" style="font-size:33px;font-weight:700;margin-bottom:4px">Your <span class="gt">Meds</span> 💊</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Private · Offline · Only you can see this ⚡</p>
+    <div class="med-tabs" style="flex-wrap:wrap">
+      <button class="med-tab active" id="mt-sched" onclick="switchMedTab('sched')">⏰ Schedule</button>
+      <button class="med-tab" id="mt-log" onclick="switchMedTab('log')">📊 Log</button>
+      <button class="med-tab" id="mt-supply" onclick="switchMedTab('supply')">📦 Supply</button>
+      <button class="med-tab" id="mt-interact" onclick="switchMedTab('interact')">⚠️ Interactions</button>
+      <button class="med-tab" id="mt-report" onclick="switchMedTab('report')">📋 Report</button>
+    </div>
+  </div>
+  <div style="padding:0 16px 32px">
+    <!-- Schedule -->
+    <div id="mp-sched" class="med-panel active">
+      <div id="active-meds-list"></div>
+      <button class="bp" style="width:100%;margin-top:6px" onclick="showAddMedForm()" id="add-med-btn">＋ Add Medication</button>
+      <div id="add-med-form-wrap" style="display:none;margin-top:14px">
+        <div class="med-form">
+          <div class="med-form-title">💊 New Medication</div>
+          <div class="mf-group">
+            <div class="mf-label">Medication</div>
+            <select class="mf-select" id="mf-med" onchange="onMedSelect(this.value)">
+              <option value="">Choose medication...</option>
+              <option value="custom">✏️ Custom medication</option>
+            </select>
+          </div>
+          <div class="mf-group" id="mf-custom-wrap" style="display:none">
+            <div class="mf-label">Custom Name</div>
+            <input class="mf-input" id="mf-custom-name" placeholder="e.g. My medication">
+          </div>
+          <div class="mf-row">
+            <div class="mf-group"><div class="mf-label">Type</div>
+              <select class="mf-select" id="mf-type">
+                <option value="pill">💊 Pill</option><option value="patch">🩹 Patch</option>
+                <option value="injection">💉 Injection</option><option value="gel">🧴 Gel</option>
+              </select>
+            </div>
+            <div class="mf-group"><div class="mf-label">Dose</div><input class="mf-input" id="mf-dose" placeholder="e.g. 2mg"></div>
+          </div>
+          <div class="mf-row">
+            <div class="mf-group"><div class="mf-label">Every</div><input class="mf-input" type="number" id="mf-interval" placeholder="1" min="0.5" step="0.5" value="1"></div>
+            <div class="mf-group"><div class="mf-label">Unit</div>
+              <select class="mf-select" id="mf-unit"><option value="days">Days</option><option value="hours">Hours</option></select>
+            </div>
+          </div>
+          <div class="mf-group">
+            <div class="mf-label">First Dose Date & Time</div>
+            <input class="mf-input" type="datetime-local" id="mf-start">
+          </div>
+          <div class="mf-group">
+            <div class="mf-label">Notification Message (discreet)</div>
+            <div class="mf-discreet-opts" id="mf-notif-opts"></div>
+            <input class="mf-input" id="mf-notif-custom" placeholder="Or type your own..." style="margin-top:8px">
+          </div>
+          <div style="display:flex;gap:9px;margin-top:16px">
+            <button class="bg" style="flex-shrink:0" onclick="hideAddMedForm()">Cancel</button>
+            <button class="bp" style="flex:1" onclick="saveMedication()">✨ Save Medication</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Dose Log -->
+    <div id="mp-log" class="med-panel">
+      <div class="dose-log-header"><div class="sl">Dose History</div><div id="dose-streak"></div></div>
+      <div id="dose-log-list"></div>
+      <div id="dose-export-wrap" style="margin-top:14px;display:none">
+        <button class="bg" style="width:100%" onclick="exportDoseHistory()">📋 Copy History for Doctor</button>
+      </div>
+    </div>
+    <!-- Supply -->
+    <div id="mp-supply" class="med-panel">
+      <div id="supply-alerts"></div>
+      <div id="supply-cards"></div>
+      <div style="margin-top:18px">
+        <div class="sl" style="margin-bottom:10px">💊 India HRT Price Reference</div>
+        <div class="gc" style="padding:14px;overflow-x:auto">
+          <p style="font-size:11px;color:var(--muted);margin-bottom:8px">Approximate MRP — prices may vary</p>
+          <table class="price-table" id="price-ref-table"></table>
+        </div>
+      </div>
+    </div>
+    <!-- V6: Interactions -->
+    <div id="mp-interact" class="med-panel">
+      <div class="gc" style="padding:16px;margin-bottom:14px">
+        <div style="font-size:24px;margin-bottom:8px">⚠️</div>
+        <h3 class="dp" style="font-size:20px;margin-bottom:6px">Medication Interactions</h3>
+        <p style="font-size:12px;color:var(--muted);line-height:1.6">Based on your active meds. <strong style="color:var(--pink)">Not medical advice.</strong></p>
+      </div>
+      <div id="interaction-cards"></div>
+      <div id="interaction-empty" class="dose-empty">Add medications to see interaction alerts. 💊</div>
+    </div>
+    <!-- V6: Report -->
+    <div id="mp-report" class="med-panel">
+      <div class="gc" style="padding:16px;margin-bottom:14px">
+        <div style="font-size:24px;margin-bottom:8px">📋</div>
+        <h3 class="dp" style="font-size:20px;margin-bottom:6px">Health Report</h3>
+        <p style="font-size:12px;color:var(--muted);line-height:1.6">Summary of meds, doses, and side effects for your doctor.</p>
+      </div>
+      <button class="bp" style="width:100%;margin-bottom:14px" onclick="generateHealthReport()">📋 Generate Report</button>
+      <div id="health-report" style="display:none">
+        <div class="gc" style="padding:16px">
+          <pre id="health-report-text" style="font-size:11px;line-height:1.6;color:var(--text);white-space:pre-wrap;font-family:inherit"></pre>
+          <button class="bg" style="width:100%;margin-top:10px" onclick="copyHealthReport()">📋 Copy to Clipboard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- In-app alert banner -->
+<div class="med-alert-banner" id="med-alert-banner">
+  <span id="med-alert-text">✨ Time for your update</span>
+  <button onclick="onAlertDone()">Done ✓</button>
+  <button onclick="dismissAlert()">Later</button>
+</div>
+
+<!-- Crisis Modal -->
+<div id="crisis-modal" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('visible')">
+  <div class="modal-content">
+    <h2 class="dp" style="font-size:28px;margin-bottom:6px;color:#f87">🆘 Emergency Support</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">You are not alone. Reach out now.</p>
+    <div id="crisis-list"></div>
+    <button class="bp" style="width:100%;margin-top:16px" onclick="document.getElementById('crisis-modal').classList.remove('visible')">Close</button>
+  </div>
+</div>
+
+<!-- ═══════ SETTINGS MODAL ═══════ -->
+<div id="settings-modal" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('visible')">
+  <div class="modal-content">
+    <h2 class="dp" style="font-size:28px;margin-bottom:4px">⚙️ Settings</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:18px">Configure your experience</p>
+
+    <!-- AI Engine -->
+    <div class="settings-section">
+      <div class="settings-title">♡ Sweetheart AI Engine</div>
+      <p class="settings-desc">Sweetheart is offline-first. The classic local engine answers instantly, and the quantized 135M Lite brain loads privately on-device when supported.</p>
+      <div class="groq-status success" id="groq-status" style="margin:10px 0">Sweetheart classic offline mode ready</div>
+      <div class="mf-group" style="margin-top:12px">
+        <div class="mf-label">Local Brain Preference</div>
+        <select class="mf-select" id="groq-model" onchange="localStorage.setItem('tp_groq_model',this.value)">
+          <option value="sweetheart-auto">Auto: Silicon-aware</option>
+          <option value="sweetheart-classic">Classic offline only</option>
+          <option value="sweetheart-smollm">Prefer 135M Lite brain</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Identity -->
+    <div class="settings-section">
+      <div class="settings-title">✨ Identity</div>
+      <div class="mf-group">
+        <div class="mf-label">Your Name</div>
+        <input class="mf-input" id="settings-name" placeholder="Your chosen name">
+      </div>
+      <div class="mf-group">
+        <div class="mf-label">Pronouns</div>
+        <input class="mf-input" id="settings-pronoun" placeholder="e.g. she/her">
+      </div>
+      <div class="voice-toggle-wrap" style="margin-top:8px">
+        <div class="voice-toggle-label">
+          <span style="font-size:16px">🔊</span>
+          <div><div style="font-weight:700;font-size:13px">Voice greeting</div></div>
+        </div>
+        <label class="switch"><input type="checkbox" id="settings-voice"><span class="slider"></span></label>
+      </div>
+      <div class="voice-toggle-wrap" style="margin-top:8px">
+        <div class="voice-toggle-label">
+          <span style="font-size:16px">🧠</span>
+          <div><div style="font-weight:700;font-size:13px">Neural Voice (Bunker Mode)</div><div style="font-size:11px;color:var(--muted)">Use Kokoro AI (82MB download, high RAM usage)</div></div>
+        </div>
+        <label class="switch"><input type="checkbox" id="settings-neural-voice" onchange="toggleNeuralVoice(this.checked)"><span class="slider"></span></label>
+      </div>
+      <button class="bp" style="width:100%;margin-top:14px" onclick="saveIdentitySettings()">💜 Save Identity</button>
+    </div>
+
+    <!-- Security -->
+    <div class="settings-section">
+      <div class="settings-title">🛡️ Security & Privacy</div>
+      <div class="voice-toggle-wrap">
+        <div class="voice-toggle-label">
+          <span style="font-size:16px">🔐</span>
+          <div><div style="font-weight:700;font-size:13px">PIN Lock</div><div style="font-size:11px;color:var(--muted)">Require a 4-digit PIN to open the app</div></div>
+        </div>
+        <label class="switch"><input type="checkbox" id="settings-biometric" onchange="toggleBiometricAuth(this.checked)"><span class="slider"></span></label>
+      </div>
+      <div class="voice-toggle-wrap" style="margin-top:8px">
+        <div class="voice-toggle-label">
+          <span style="font-size:16px">🙈</span>
+          <div><div style="font-weight:700;font-size:13px">Panic Button</div><div style="font-size:11px;color:var(--muted)">Instant Google search disguise</div></div>
+        </div>
+        <label class="switch"><input type="checkbox" id="settings-stealth" onchange="localStorage.setItem('tp_stealth_enabled', this.checked)"><span class="slider"></span></label>
+      </div>
+      <button class="bp" style="width:100%;margin-top:14px" onclick="triggerPanicButton()">🚨 Activate Panic Mode</button>
+    </div>
+
+    <!-- Data -->
+    <div class="settings-section">
+      <div class="settings-title">💾 Data</div>
+      <div style="display:flex;gap:8px">
+        <button class="bg" style="flex:1" onclick="exportAllData()">📤 Export All</button>
+        <button class="bg" style="flex:1" onclick="document.getElementById('import-file').click()">📥 Import</button>
+        <input type="file" id="import-file" accept=".json" onchange="importAllData(this)" style="display:none">
+      </div>
+      <button class="bg" style="width:100%;margin-top:8px;color:#f87;border-color:rgba(255,100,100,.2)" onclick="if(confirm('Erase ALL app data? This cannot be undone.')){localStorage.clear();sessionStorage.clear();location.reload();}">🗑️ Reset Everything</button>
+    </div>
+
+    <button class="bp" style="width:100%;margin-top:18px" onclick="document.getElementById('settings-modal').classList.remove('visible')">Close</button>
+  </div>
+</div>
+
+<!-- ═══════ STEALTH MODE (Google-Style Search) ═══════ -->
+<div id="stealth-search" style="display:none;position:fixed;inset:0;z-index:99999;background:#fff;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:25vh;font-family:arial,sans-serif">
+  <div style="margin-bottom:30px">
+    <span style="font-size:72px;font-weight:400;color:#4285F4">G</span><span style="font-size:72px;font-weight:400;color:#EA4335">o</span><span style="font-size:72px;font-weight:400;color:#FBBC05">o</span><span style="font-size:72px;font-weight:400;color:#4285F4">g</span><span style="font-size:72px;font-weight:400;color:#34A853">l</span><span style="font-size:72px;font-weight:400;color:#EA4335">e</span>
+  </div>
+  <div style="width:90%;max-width:580px;position:relative">
+    <input id="stealth-search-input" type="text" placeholder="Search Google or type a URL" autocomplete="off"
+      style="width:100%;padding:14px 52px 14px 20px;font-size:16px;border:1px solid #dfe1e5;border-radius:24px;outline:none;box-shadow:none;background:#fff;color:#222"
+      onkeydown="if(event.key==='Enter') stealthDoSearch()">
+    <div style="position:absolute;right:16px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:20px" onclick="stealthDoSearch()">🔍</div>
+  </div>
+  <div style="margin-top:28px;display:flex;gap:12px">
+    <button onclick="stealthDoSearch()" style="background:#f8f9fa;border:1px solid #f8f9fa;border-radius:4px;color:#3c4043;font-size:14px;padding:10px 20px;cursor:pointer;font-family:arial,sans-serif">Google Search</button>
+    <button onclick="stealthDoSearch()" style="background:#f8f9fa;border:1px solid #f8f9fa;border-radius:4px;color:#3c4043;font-size:14px;padding:10px 20px;cursor:pointer;font-family:arial,sans-serif">I'm Feeling Lucky</button>
+  </div>
+  <div style="position:fixed;bottom:0;left:0;right:0;background:#f2f2f2;border-top:1px solid #dadce0;padding:12px 30px;font-size:13px;color:#70757a;display:flex;justify-content:space-between">
+    <span>India</span>
+    <span style="font-size:11px;color:#999">Type <b>11380</b> or <b>exit</b> to return</span>
+  </div>
+</div>
+
+<!-- ═══════ BOTTOM NAV ═══════ -->
+<nav id="bnav" role="navigation" aria-label="Main navigation">
+  <button class="nb active" id="nav-home"    onclick="sw('home')"    aria-label="Home"><span class="ni">🏠</span><span>Home</span></button>
+  <button class="nb"        id="nav-learn"   onclick="sw('learn')"   aria-label="Learn"><span class="ni">📚</span><span>Learn</span></button>
+  <button class="nb"        id="nav-glow"    onclick="sw('glow')"    aria-label="Glow"><span class="ni">💄</span><span>Glow</span></button>
+  <button class="nb"        id="nav-support" onclick="sw('support')" aria-label="Support"><span class="ni">💖</span><span>Support</span></button>
+  <button class="nb"        id="nav-wellness" onclick="sw('wellness')" aria-label="Wellness"><span class="ni">🧘</span><span>Wellness</span></button>
+  <button class="nb"        id="nav-voice"   onclick="sw('voice')"   aria-label="Voice"><span class="ni">🎙️</span><span>Voice</span></button>
+  <button class="nb"        id="nav-meds"    onclick="sw('meds')"    aria-label="Meds"><span class="ni">💊</span><span>Meds</span></button>
+</nav>
+
+<script src="data.js"></script>
+<script src="script-v7.js"></script>
+</body>
+</html>
