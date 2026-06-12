@@ -51,6 +51,21 @@
    ```
 5. The final `.exe` will be generated in `desktop/dist/`.
 
+### 🐧 Linux Desktop (.deb)
+
+1. Ensure you have Node.js, `npm`, and `fpm` installed (requires a Linux environment, WSL, or Docker).
+2. Navigate to the desktop directory and install dependencies:
+   ```bash
+   cd desktop
+   npm install
+   ```
+3. Sync the web assets (using the bash equivalent of the sync script or by manually copying the `www` folder).
+4. Build the Debian package using Electron Builder:
+   ```bash
+   npm run build:linux
+   ```
+5. The final `.deb` will be generated in `desktop/dist/`.
+
 ## 📜 License
 
 This project is licensed under the **AGPL-3.0 License**. See the [LICENSE](LICENSE) file for more details.
