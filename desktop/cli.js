@@ -111,9 +111,9 @@ function askQuestion() {
         try {
             const output = await generator(buildPrompt(text), {
                 max_new_tokens: 150,
-                temperature: 0.45,
+                temperature: 0.6,
                 do_sample: true,
-                repetition_penalty: 1.18,
+                repetition_penalty: 1.1,
                 top_p: 0.9,
                 return_full_text: false,
                 eos_token_id: 2
