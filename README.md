@@ -86,12 +86,24 @@ curl -fsSL https://raw.githubusercontent.com/Dev2Creator/TransPower-v1.7/main/in
 
 ### 💻 Command Line (PowerShell / Terminal)
 
-Since Trans Power is a Node.js/Electron app, it cannot be installed via Python's `pip`. However, developers can run it directly from any command prompt:
+We've built a fully-featured, beautifully formatted CLI so developers can chat with Sweetheart directly from the terminal without opening the desktop app!
+
+**Install globally:**
 ```powershell
 cd desktop
+npm install -g .
+```
+
+**Run the CLI:**
+```powershell
+transpwr
+```
+
+Alternatively, you can just start the desktop GUI app using:
+```powershell
 npm start
 ```
-Or, simply execute the compiled `.exe` directly from PowerShell:
+Or simply execute the compiled `.exe` directly from PowerShell:
 ```powershell
 .\dist\"Trans Power 1.7.0.exe"
 ```

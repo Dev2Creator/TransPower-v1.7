@@ -3,6 +3,9 @@
   "version": "1.7.0",
   "description": "Trans Power Sweetheart Assistant",
   "main": "main.js",
+  "bin": {
+    "transpwr": "./cli.js"
+  },
   "scripts": {
     "start": "electron .",
     "build:win": "electron-builder --win",
