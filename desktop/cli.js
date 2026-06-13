@@ -115,7 +115,8 @@ function askQuestion() {
                 do_sample: true,
                 repetition_penalty: 1.18,
                 top_p: 0.9,
-                return_full_text: false
+                return_full_text: false,
+                eos_token_id: 2
             });
 
             spinner.stop();
