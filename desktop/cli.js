@@ -74,8 +74,7 @@ async function start() {
 
         // Load the model locally
         generator = await pipeline('text-generation', modelName, {
-            quantized: true,
-            model_file_name: 'model'
+            model_file_name: 'model_quantized'
         });
 
         spinner.succeed(blue.bold('Sweetheart is online! 💖'));
@@ -115,13 +114,14 @@ function askQuestion() {
                 temperature: 0.45,
                 do_sample: true,
                 repetition_penalty: 1.18,
-                top_p: 0.9
+                top_p: 0.9,
+                return_full_text: false
             });
 
             spinner.stop();
             
             const fullText = output[0]?.generated_text || '';
-            const reply = sanitizeReply(fullText.split('<|im_start|>assistant').pop());
+            const reply = sanitizeReply(fullText);
 
             console.log(pink.bold('\n╭─[Sweetheart]') + ' 🌸');
             console.log(pink.bold('╰─> ') + white(reply) + '\n');
