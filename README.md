@@ -51,20 +51,43 @@
    ```
 5. The final `.exe` will be generated in `desktop/dist/`.
 
-### 🐧 Linux Desktop (.deb)
+### 🐧 Linux Desktop (.deb, .tar.gz, pacman)
 
-1. Ensure you have Node.js, `npm`, and `fpm` installed (requires a Linux environment, WSL, or Docker).
+1. Ensure you have Node.js and `npm` installed. (For Debian packages, `fpm` is required).
 2. Navigate to the desktop directory and install dependencies:
    ```bash
    cd desktop
    npm install
    ```
 3. Sync the web assets (using the bash equivalent of the sync script or by manually copying the `www` folder).
-4. Build the Debian package using Electron Builder:
+4. Build the Linux packages (`.deb`, `.tar.gz`, and Arch Linux `.pacman`):
    ```bash
    npm run build:linux
    ```
-5. The final `.deb` will be generated in `desktop/dist/`.
+   *Arch Linux users can later package this into the AUR for `yay -S transpwr`.*
+
+### 🍎 macOS Desktop (.dmg, .zip)
+
+*Note: macOS builds must be compiled on an actual macOS machine.*
+1. Install Node.js and `npm` via Homebrew (`brew install node`).
+2. Run the build command:
+   ```bash
+   cd desktop
+   npm install
+   npm run build:mac
+   ```
+
+### 💻 Command Line (PowerShell / Terminal)
+
+Since Trans Power is a Node.js/Electron app, it cannot be installed via Python's `pip`. However, developers can run it directly from any command prompt:
+```powershell
+cd desktop
+npm start
+```
+Or, simply execute the compiled `.exe` directly from PowerShell:
+```powershell
+.\dist\"Trans Power 1.7.0.exe"
+```
 
 ## 📜 License
 
