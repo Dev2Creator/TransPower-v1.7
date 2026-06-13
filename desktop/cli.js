@@ -63,7 +63,7 @@ async function start() {
     }).start();
 
     try {
-        const transformers = require('@xenova/transformers');
+        const transformers = require('@huggingface/transformers');
         pipeline = transformers.pipeline;
         env = transformers.env;
 
@@ -75,6 +75,7 @@ async function start() {
         // Load the model locally
         generator = await pipeline('text-generation', modelName, {
             quantized: true,
+            model_file_name: 'model'
         });
 
         spinner.succeed(blue.bold('Sweetheart is online! 💖'));
@@ -83,7 +84,9 @@ async function start() {
     } catch (err) {
         spinner.fail(chalk.red.bold('Failed to wake up Sweetheart.'));
         console.log(dim('Make sure the model is downloaded in www/assets/model/Sweetheart-135M'));
-        console.error(chalk.red(err.message));
+        console.log("----- ERROR DETAILS -----");
+        console.log(err.stack || err);
+        console.log("-------------------------");
         process.exit(1);
     }
 }

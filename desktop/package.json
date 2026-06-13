@@ -33,12 +33,23 @@
       "icon": "www/assets/mascot.png"
     },
     "linux": {
-      "target": ["deb", "tar.gz", "pacman"],
+      "target": [
+        "deb",
+        "tar.gz",
+        "pacman"
+      ],
       "icon": "www/assets/mascot.png"
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "icon": "www/assets/mascot.png"
     }
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1"
   }
 }
