@@ -1,0 +1,26 @@
+# Maintainer: Anika Mukherjee <cuteypieanika@gmail.com>
+pkgname=transpwr-bin
+pkgver=1.7.0
+pkgrel=1
+pkgdesc="Trans Power Sweetheart Assistant"
+arch=('x86_64')
+url="https://transpower.app"
+license=('AGPL3')
+depends=('nss' 'libxss' 'gtk3' 'libsecret' 'alsa-lib')
+provides=('transpwr')
+conflicts=('transpwr')
+source=("https://github.com/Dev2Creator/TransPower-v1.7/releases/download/v${pkgver}/transpwr-${pkgver}.tar.gz")
+
+sha256sums=('5f48cbc541dcf1ca4c141f14e8c30131596862b631a57355b2faa9e24dea00b0')
+
+package() {
+    # 1. Create target directories
+    install -d "${pkgdir}/opt/transpwr"
+    install -d "${pkgdir}/usr/bin"
+    
+    # 2. Copy extracted tar.gz contents to /opt/transpwr
+    cp -r "${srcdir}/"* "${pkgdir}/opt/transpwr/"
+    
+    # 3. Create a symlink so users can type 'transpwr' in terminal
+    ln -s "/opt/transpwr/transpwr" "${pkgdir}/usr/bin/transpwr"
+}
