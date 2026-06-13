@@ -53,6 +53,13 @@
 
 ### 🐧 Linux Desktop (.deb, .tar.gz, pacman)
 
+**One-line Installer (Recommended):**
+You can install the latest Linux release instantly via terminal:
+```bash
+curl -fsSL https://raw.githubusercontent.com/Dev2Creator/TransPower-v1.7/main/install.sh | sudo bash
+```
+
+**Manual Build:**
 1. Ensure you have Node.js and `npm` installed. (For Debian packages, `fpm` is required).
 2. Navigate to the desktop directory and install dependencies:
    ```bash
