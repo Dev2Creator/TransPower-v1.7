@@ -1,0 +1,7 @@
+name: transpwr
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - nodejs>=20.0.0
+  - npm

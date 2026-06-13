@@ -108,6 +108,17 @@ Or simply execute the compiled `.exe` directly from PowerShell:
 .\dist\"Trans Power 1.7.0.exe"
 ```
 
+### 🐍 Conda Environment
+
+If you prefer using **Conda**, we've included an `environment.yml` file that provisions the correct Node.js runtime for you:
+```bash
+conda env create -f environment.yml
+conda activate transpwr
+cd desktop
+npm install -g .
+transpwr
+```
+
 ## 📜 License
 
 This project is licensed under the **AGPL-3.0 License**. See the [LICENSE](LICENSE) file for more details.
