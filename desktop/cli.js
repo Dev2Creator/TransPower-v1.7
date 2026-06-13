@@ -32,25 +32,17 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-function sanitizeReply(text) {
-    let out = String(text || '').trim();
-    out = out.replace(/<\|im_end\|>/g, '');
-    out = out.replace(/<\|endoftext\|>/g, '');
-    out = out.split('<|im_start|>')[0].trim();
-    return out;
-}
-
-function buildPrompt(userText) {
-    return `<|im_start|>system
-You are Sweetheart AI inside Trans Power.
-You are a big caring sister: warm, protective, affirming, grounded, and practical.
-Keep replies short, kind, and useful.
-<|im_end|>
-<|im_start|>user
-${userText}
-<|im_end|>
-<|im_start|>assistant
-`;
+function buildMessages(userText) {
+    return [
+        {
+            role: 'system',
+            content: 'You are Sweetheart AI inside Trans Power. You are a big caring sister: warm, protective, affirming, grounded, and practical. Keep replies short, kind, and useful.'
+        },
+        {
+            role: 'user',
+            content: userText
+        }
+    ];
 }
 
 async function start() {
@@ -109,20 +101,18 @@ function askQuestion() {
         }).start();
 
         try {
-            const output = await generator(buildPrompt(text), {
+            const output = await generator(buildMessages(text), {
                 max_new_tokens: 150,
                 temperature: 0.6,
                 do_sample: true,
                 repetition_penalty: 1.1,
-                top_p: 0.9,
-                return_full_text: false,
-                eos_token_id: 2
+                top_p: 0.9
             });
 
             spinner.stop();
             
-            const fullText = output[0]?.generated_text || '';
-            const reply = sanitizeReply(fullText);
+            const messages = output[0].generated_text;
+            const reply = messages[messages.length - 1].content;
 
             console.log(pink.bold('\n╭─[Sweetheart]') + ' 🌸');
             console.log(pink.bold('╰─> ') + white(reply) + '\n');
